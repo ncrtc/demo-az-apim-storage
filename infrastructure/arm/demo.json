@@ -104,8 +104,78 @@
                 "openid": null
               },
               "subscriptionKeyParameterNames": {}
-            }
-        }
+            },
+            "resources": [
+              {
+                "type": "Microsoft.ApiManagement/service/apis/operations",
+                "name": "[concat(variables('apimName'), '/blob/get')]",
+                "apiVersion": "2017-03-01",
+                "properties": {
+                  "displayName": "GET",
+                  "method": "GET",
+                  "urlTemplate": "/*",
+                  "templateParameters": [],
+                  "description": "",
+                  "request": {
+                    "queryParameters": [],
+                    "headers": [],
+                    "representations": []
+                  },
+                  "responses": [
+                    {
+                      "statusCode": 200,
+                      "description": "",
+                      "representations": [],
+                      "headers": []
+                    },
+                    {
+                      "statusCode": 500,
+                      "description": "",
+                      "representations": [],
+                      "headers": []
+                    },
+                    {
+                      "statusCode": 400,
+                      "description": "",
+                      "representations": [],
+                      "headers": []
+                    }
+                  ],
+                  "policies": null
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+                    "name": "[concat(variables('apimName'), '/blob/get/', 'policy')]",
+                    "apiVersion": "2017-03-01",
+                    "properties": {
+                      "policyContent": "[Concat('<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - Only the <forward-request> policy element can appear within the <backend> section element.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <rewrite-uri template=\"/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=',parameters('api_b2c_orders').sig,'\" />\r\n    <set-method>POST</set-method>\r\n    <set-backend-service base-url=\"https://',parameters('api_b2c_orders').server,'.logic.azure.com:443/workflows/',parameters('api_b2c_orders').workflowId,'/triggers\" />\r\n    <set-header name=\"Content-Type\" exists-action=\"override\">\r\n      <value>application/xml</value>\r\n    </set-header>\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>')]"
+                    },
+                    "resources": [],
+                    "dependsOn": [
+                      "[resourceId('Microsoft.ApiManagement/service/apis', variables('apimName') ,'/blob']",
+                      "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('apimName'), parameters('api_b2c').name, '/get')]"
+                    ]
+                  }
+                ],
+                "dependsOn": [
+                  "[resourceId('Microsoft.ApiManagement/service/apis', variables('apimName'), '/blob)]"
+                ]
+              },
+              {
+                "type": "Microsoft.ApiManagement/service/apis/policies",
+                "name": "[concat(variables('apimName'), '/blob', '/', 'policy')]",
+                "apiVersion": "2017-03-01",
+                "properties": {
+                  "policyContent": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - Only the <forward-request> policy element can appear within the <backend> section element.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-header name=\"Ocp-Apim-Subscription-Key\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>"
+                },
+                "resources": [],
+                "dependsOn": [
+                  "[resourceId('Microsoft.ApiManagement/service/apis', variables('apimName') , '/blob')]"
+                ]
+              }
+            ]
+          }
     ],
     "outputs": {
         "storageAccount": {
