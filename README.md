@@ -21,10 +21,10 @@ Configure API:
 
 
 Select a reference policy base on the API Managment SKU:
-- https://github.com/ncrtc/demo-az-apim-storage/blob/master/policy-consumption.xml
 - https://github.com/ncrtc/demo-az-apim-storage/blob/master/policy-standard.xml
 
-The consumption SKU has different headers that are sent to the backend and needs slighly different signing logic.
+In some scenaios a x-ms-privatelink-id header added to the backend call. In this case the following policy will apply:
+https://github.com/ncrtc/demo-az-apim-storage/blob/master/policy-x-ms-privatelink-id.xml
 
 In the selected policy replace the three placeholders:
  - YOUR_STORAGE_ACCOUNT_NAME_HERE
