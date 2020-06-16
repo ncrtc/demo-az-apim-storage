@@ -15,7 +15,7 @@
         <set-variable name="UTCNow" value="@(DateTime.UtcNow.ToString("R"))" />
         <set-variable name="StorageAccountName" value="YOUR_STORAGE_ACCOUNT_NAME_HERE" />
         <set-variable name="ContainerName" value="YOUR_STORAGE_CONTAINER_NAME_HERE" />
-        <set-variable name="BlobName" value="@(context.Request.Url.Path.Replace("/content/", ""))" />
+        <set-variable name="BlobName" value="@(context.Request.Url.Path.Replace("/YOUR_STORAGE_CONTAINER_NAME_HERE/", ""))" />
         <set-variable name="StringToSign" value="@{
             string storageAccountName = context.Variables.GetValueOrDefault<string>("StorageAccountName");
             string containerName = context.Variables.GetValueOrDefault<string>("ContainerName");
@@ -31,7 +31,7 @@
         <set-header name="Authorization" exists-action="override">
             <value>@{
                     string stringToSign = context.Variables.GetValueOrDefault<string>("StringToSign");
-                    string storageKey = "xatRb+r0FrPxt+I1m+i7M8V668tz7QPbOX+gT4FbUcBCVl57+0Pw6Phtva7j5WX27o95dCu3+AZ4t6i47KpxJA==";
+                    string storageKey = "YOUR_STORAGE_ACCESS_KEY_HERE";
 
                     HMACSHA256 hmac = new HMACSHA256(Convert.FromBase64String(storageKey));
                     string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
