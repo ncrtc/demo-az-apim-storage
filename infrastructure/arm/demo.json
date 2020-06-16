@@ -87,6 +87,24 @@
                 "publisherEmail": "[parameters('adminEmail')]",
                 "publisherName": "[parameters('orgName')]"
             }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "name": "[concat(variables('apimName'), '/blob']",
+            "apiVersion": "2017-03-01",
+            "properties": {
+              "displayName": "blob",
+              "description": "",
+              "path": "/blob",
+              "protocols": [
+                "https"
+              ],
+              "authenticationSettings": {
+                "oAuth2": null,
+                "openid": null
+              },
+              "subscriptionKeyParameterNames": {}
+            }
         }
     ],
     "outputs": {
