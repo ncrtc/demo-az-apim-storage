@@ -90,7 +90,7 @@
         },
         {
             "type": "Microsoft.ApiManagement/service/apis",
-            "name": "[concat(variables('apimName'), '/blob']",
+            "name": "[concat(variables('apimName'), '/blob')]",
             "apiVersion": "2017-03-01",
             "properties": {
               "displayName": "blob",
