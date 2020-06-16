@@ -12,6 +12,11 @@ Using an policy expression we can configure API managment to create an authoriza
 
 ### 1. Create and API Manamgent Instance
 ### 2. Create an API
+
+Configure API:
+
+![alt text](fe-configuration.png "")
+
 ### 3. Use an API policy to access storage account as a backend.
 
 
