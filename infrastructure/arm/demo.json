@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": "def",
+            "maxLength": 11,
+            "metadata": {
+                "description": "Name for the Azure Storage Account - must be unique"
+            }
+        },
+        "storageType": {
+            "type": "string",
+            "allowedValues": [
+                "Storage",
+                "StorageV2",
+                "BlobStorage",
+                "FileStorage",
+                "BlockBlobStorage"
+            ],
+            "defaultValue": "StorageV2",
+            "metadata": {
+                "description": "Specify the kind of Azure Storage Account"
+            }
+        },
+        "storageSKU": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ],
+            "defaultValue": "Standard_LRS",
+            "metadata": {
+                "description": "SKU of the storage account"
+            }
+        },
+        "adminEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Email address to be associated with APIM."
+            }
+        },
+        "orgName": {
+            "type": "string",
+            "metadata": {
+                "description": "Org name to be associated with APIM."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }                
+    },
+    "variables": {
+        "storageAccountName": "[toLower(concat(parameters('prefix'),uniqueString(resourceGroup().id)))]",
+        "apimName": "[toLower(concat(parameters('prefix'),uniqueString(resourceGroup().id)))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2018-07-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageSKU')]"
+            },
+            "kind": "[parameters('storageType')]",
+            "tags": {
+            }
+        },
+        {
+            "apiVersion": "2019-01-01",
+            "name": "[variables('apimName')]",
+            "location": "[parameters('location')]",
+            "type": "Microsoft.ApiManagement/service",
+            "sku": {
+                "name": "Consumption"
+            },
+            "properties": {
+                "publisherEmail": "[parameters('adminEmail')]",
+                "publisherName": "[parameters('orgName')]"
+            }
+        }
+    ],
+    "outputs": {
+        "storageAccount": {
+            "type": "string",
+            "value": "[variables('storageAccountName')]"
+        }
+    }
+}
