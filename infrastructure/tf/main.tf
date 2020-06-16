@@ -1,6 +1,6 @@
 # Configure the Azure provider
 provider "azurerm" {
-  version = "= 2.13.0"
+  version = "= 2.14.0"
   features {}
 }
 
@@ -16,9 +16,26 @@ resource "azurerm_api_management" "example" {
   publisher_name      = "tjs"
   publisher_email     = "tim@tjs.com"
 
-  sku_name = "Consumption_0"
+  sku_name = "Consumption_1"
+
+  security {
+      enable_backend_ssl30 = false
+      enable_backend_tls10 = false
+      enable_backend_tls11 = false
+      enable_frontend_ssl30 = false
+      enable_frontend_tls10 = false
+      enable_frontend_tls11 = false
+      enable_triple_des_ciphers = false
+  }
 
   policy {
-    xml_link = "https://raw.githubusercontent.com/ncrtc/demo-az-apim-storage/master/policy-standard.xml"
+    xml_content = <<XML
+    <policies>
+      <inbound />
+      <backend />
+      <outbound />
+      <on-error />
+    </policies>
+XML
   }
 }
