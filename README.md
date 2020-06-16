@@ -23,5 +23,7 @@ In the selected policy replace the three placeholders:
  - YOUR_STORAGE_ACCOUNT_NAME_HERE
  - YOUR_STORAGE_CONTAINER_NAME_HERE
  - YOUR_STORAGE_ACCESS_KEY_HERE
- 
- 
+
+
+### Reference
+- https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
