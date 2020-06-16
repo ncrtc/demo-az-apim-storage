@@ -27,3 +27,4 @@ In the selected policy replace the three placeholders:
 
 ### Reference
 - https://docs.microsoft.com/en-us/rest/api/storageservices/get-blob
+- https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
