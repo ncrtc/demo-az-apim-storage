@@ -1,0 +1,62 @@
+<!--
+    IMPORTANT:
+    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
+    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.
+    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
+    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.
+    - To remove a policy, delete the corresponding policy statement from the policy document.
+    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.
+    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.
+    - Policies are applied in the order of their appearance, from the top down.
+    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.
+-->
+<policies>
+    <inbound>
+        <set-variable name="UTCNow" value="@(DateTime.UtcNow.ToString("R"))" />
+        <set-variable name="StorageAccountName" value="YOUR_STORAGE_ACCOUNT_NAME_HERE" />
+        <set-variable name="ContainerName" value="YOUR_STORAGE_CONTAINER_NAME_HERE" />
+        <set-variable name="BlobName" value="@(context.Request.Url.Path.Replace("/content/", ""))" />
+        <set-variable name="StringToSign" value="@{
+            string storageAccountName = context.Variables.GetValueOrDefault<string>("StorageAccountName");
+            string containerName = context.Variables.GetValueOrDefault<string>("ContainerName");
+            string blobName = context.Variables.GetValueOrDefault<string>("BlobName");
+            string contentLength = context.Request.Headers.GetValueOrDefault("Content-Length");
+            string ContentType = context.Request.Headers.GetValueOrDefault("Content-Type");
+            string dateToSign = context.Variables.GetValueOrDefault<string>("UTCNow");
+            string headerResource = $"x-ms-date:{dateToSign}\nx-ms-privatelink-id:\nx-ms-version:2017-04-17";
+            string urlResource = $"/{storageAccountName}/{containerName}/{blobName}";
+            return $"GET\n\n\n{contentLength}\n\n{ContentType}\n\n\n\n\n\n\n{headerResource}\n{urlResource}";            
+        }" />
+        <base />
+        <set-header name="Authorization" exists-action="override">
+            <value>@{
+                    string stringToSign = context.Variables.GetValueOrDefault<string>("StringToSign");
+                    string storageKey = "YOUR_STORAGE_ACCESS_KEY_HERE";
+
+                    HMACSHA256 hmac = new HMACSHA256(Convert.FromBase64String(storageKey));
+                    string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
+                    return String.Format("{0} {1}:{2}", "SharedKey", context.Variables.GetValueOrDefault<string>("StorageAccountName"), signature);
+                }</value>
+        </set-header>
+        <set-header name="x-ms-date" exists-action="override">
+            <value>@(context.Variables.GetValueOrDefault<string>("UTCNow"))</value>
+        </set-header>
+        <set-header name="x-ms-version" exists-action="override">
+            <value>2017-04-17</value>
+        </set-header>
+        <set-backend-service base-url="@{
+            string storageAccountName = context.Variables.GetValueOrDefault<string>("StorageAccountName");
+            string containerName = context.Variables.GetValueOrDefault<string>("ContainerName");
+            return $"https://{storageAccountName}.blob.core.windows.net/{containerName}";
+        }" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
