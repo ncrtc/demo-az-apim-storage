@@ -15,7 +15,7 @@
                 <set-variable name="UTCNow" value="@(DateTime.UtcNow.ToString(&quot;R&quot;))" />
                 <set-variable name="StorageAccountName" value="YOUR_STORAGE_ACCOUNT_NAME_HERE" />
                 <set-variable name="ContainerName" value="YOUR_STORAGE_CONTAINER_NAME_HERE" />
-                <set-variable name="BlobName" value="@(context.Request.Url.Path.Replace(&quot;/YOUR_STORAGE_CONTAINER_NAME_HERE/&quot;, &quot;&quot;))" />
+                <set-variable name="BlobName" value="@(context.Request.Url.Path.Replace(&quot;/content/&quot;, &quot;&quot;))" />
                 <set-variable name="StringToSign" value="@{&#xA;            string storageAccountName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;StorageAccountName&quot;);&#xA;            string containerName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;ContainerName&quot;);&#xA;            string blobName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;BlobName&quot;);&#xA;            string contentLength = context.Request.Headers.GetValueOrDefault(&quot;Content-Length&quot;);&#xA;            string ContentType = context.Request.Headers.GetValueOrDefault(&quot;Content-Type&quot;);&#xA;            string dateToSign = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;UTCNow&quot;);&#xA;            string headerResource = $&quot;x-ms-date:{dateToSign}\nx-ms-version:2017-04-17&quot;;&#xA;            string urlResource = $&quot;/{storageAccountName}/{containerName}/{blobName}&quot;;&#xA;            return $&quot;GET\n\n\n{contentLength}\n\n{ContentType}\n\n\n\n\n\n\n{headerResource}\n{urlResource}&quot;;            &#xA;        }" />
                 <base />
                 <set-header name="Authorization" exists-action="override">
