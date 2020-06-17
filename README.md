@@ -2,6 +2,8 @@
 
 This project shows how to use API Managment to expose private blobs from Azure storage via HTTP. The solution uses API managment as a frontend and uses the storage account REST API as a backend.
 
+![alt text](apim-fe-storage-be.png "")
+
 ##  Blob storage
 
 Create a storage account and create a container with your content. The storage API should be configured for private access via an access key.
