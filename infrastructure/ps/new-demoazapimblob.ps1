@@ -33,5 +33,4 @@ $ApiMgmtContext = New-AzApiManagementContext -ResourceGroupName $rgName -Service
 $apiId = (New-AzApiManagementApi -Context $ApiMgmtContext -Name $apiName -Protocols @("https") -Path "blob" -serviceurl "https://api.contoso.com").apiId
 New-AzAPiManagementOperation -Context $ApiMgmtContext -ApiId $apiId -OperationId "get" -Name "GET" -method "GET" -UrlTemplate "/*"
 
-Set-Content -Path ".\policy.xml" -Value $Policy
-Set-AzApiManagementPolicy -Context $ApiMgmtContext -apiid $apiId -PolicyFilePath ".\policy.xml"
+Set-AzApiManagementPolicy -Context $ApiMgmtContext -apiid $apiId -Policy $Policy
