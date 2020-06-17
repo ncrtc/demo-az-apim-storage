@@ -1,8 +1,10 @@
-# demo-az-apim-storage
+# Using API Managment as a frontend for blob storage
 
 This project shows how to use API Managment to expose private blobs from Azure storage via HTTP. The solution uses API managment as a frontend and uses the storage account REST API as a backend.
 
+
 ![alt text](apim-fe-storage-be.png "")
+
 
 ##  Blob storage
 
