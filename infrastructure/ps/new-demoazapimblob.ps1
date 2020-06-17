@@ -26,7 +26,7 @@ Set-AzStorageBlobContent -Container $containerName -File ".\test.txt" -Blob "tes
 
 $apimName = "apim-" + $name
 $apiName = "blob"
-$Policy = (Invoke-WebRequest https://raw.githubusercontent.com/ncrtc/demo-az-apim-storage/master/policy-standard.xml).content.Replace("YOUR_STORAGE_ACCOUNT_NAME_HERE","$storName").Replace("YOUR_STORAGE_CONTAINER_NAME_HERE","$containerName").Replace("YOUR_STORAGE_ACCESS_KEY_HERE","$storKey")
+$Policy = (Invoke-WebRequest https://raw.githubusercontent.com/ncrtc/demo-az-apim-storage/master/policy-ps-friendly.xml).content.Replace("YOUR_STORAGE_ACCOUNT_NAME_HERE","$storName").Replace("YOUR_STORAGE_CONTAINER_NAME_HERE","$containerName").Replace("YOUR_STORAGE_ACCESS_KEY_HERE","$storKey")
 New-AzAPiManagement -ResourceGroupName $rgname -Name $apimName -location $location -organization $org -adminemail $email -Sku Consumption
 
 $ApiMgmtContext = New-AzApiManagementContext -ResourceGroupName $rgName -ServiceName $apimName

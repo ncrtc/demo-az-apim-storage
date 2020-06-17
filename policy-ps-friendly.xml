@@ -1,0 +1,48 @@
+<!--
+    IMPORTANT:
+    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
+    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> sectionelement.
+    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
+    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.
+    - To remove a policy, delete the corresponding policy statement from the policy document.
+    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.
+    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.
+    - Policies are applied in the order of their appearance, from the top down.
+    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.
+-->
+<policies>
+        <inbound>
+                <set-variable name="UTCNow" value="@(DateTime.UtcNow.ToString(&quot;R&quot;))" />
+                <set-variable name="StorageAccountName" value="YOUR_STORAGE_ACCOUNT_NAME_HERE" />
+                <set-variable name="ContainerName" value="YOUR_STORAGE_CONTAINER_NAME_HERE" />
+                <set-variable name="BlobName" value="@(context.Request.Url.Path.Replace(&quot;/YOUR_STORAGE_CONTAINER_NAME_HERE/&quot;, &quot;&quot;))" />
+                <set-variable name="StringToSign" value="@{&#xA;            string storageAccountName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;StorageAccountName&quot;);&#xA;            string containerName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;ContainerName&quot;);&#xA;            string blobName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;BlobName&quot;);&#xA;            string contentLength = context.Request.Headers.GetValueOrDefault(&quot;Content-Length&quot;);&#xA;            string ContentType = context.Request.Headers.GetValueOrDefault(&quot;Content-Type&quot;);&#xA;            string dateToSign = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;UTCNow&quot;);&#xA;            string headerResource = $&quot;x-ms-date:{dateToSign}\nx-ms-version:2017-04-17&quot;;&#xA;            string urlResource = $&quot;/{storageAccountName}/{containerName}/{blobName}&quot;;&#xA;            return $&quot;GET\n\n\n{contentLength}\n\n{ContentType}\n\n\n\n\n\n\n{headerResource}\n{urlResource}&quot;;            &#xA;        }" />
+                <base />
+                <set-header name="Authorization" exists-action="override">
+                        <value>@{
+                    string stringToSign = context.Variables.GetValueOrDefault&lt;string&gt;("StringToSign");
+                    string storageKey = "YOUR_STORAGE_ACCESS_KEY_HERE";
+
+                    HMACSHA256 hmac = new HMACSHA256(Convert.FromBase64String(storageKey));
+                    string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
+                    return String.Format("{0} {1}:{2}", "SharedKey", context.Variables.GetValueOrDefault&lt;string&gt;("StorageAccountName"), signature);
+                }</value>
+                </set-header>
+                <set-header name="x-ms-date" exists-action="override">
+                        <value>@(context.Variables.GetValueOrDefault&lt;string&gt;("UTCNow"))</value>
+                </set-header>
+                <set-header name="x-ms-version" exists-action="override">
+                        <value>2017-04-17</value>
+                </set-header>
+                <set-backend-service base-url="@{&#xA;            string storageAccountName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;StorageAccountName&quot;);&#xA;            string containerName = context.Variables.GetValueOrDefault&lt;string&gt;(&quot;ContainerName&quot;);&#xA;            return $&quot;https://{storageAccountName}.blob.core.windows.net/{containerName}&quot;;&#xA;        }" />
+        </inbound>
+        <backend>
+                <base />
+        </backend>
+        <outbound>
+                <base />
+        </outbound>
+        <on-error>
+                <base />
+        </on-error>
+</policies>
